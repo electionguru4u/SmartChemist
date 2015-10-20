@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import oasis.com.smartchemist.utils.Rack;
 import oasis.com.smartchemist.utils.Shelf;
+import oasis.com.smartchemist.utils.Tax;
 
 
 public class DatabaseStock extends SQLiteOpenHelper {
@@ -37,6 +38,11 @@ public class DatabaseStock extends SQLiteOpenHelper {
     private static final String TAX_CODE = "mst_code";
     private static final String STOCK_QUANTITY = "mst_quantity";
 //stock_code,batch_code,tax_code,quantity,shelf_code;
+    private static final String DATABASE_TABLE_TAX = "master_tax";
+    public static final String TAX_NAME= "tax_name";
+    public static final String TAX_PERCENTAGE= "tax_percentage";
+    public static final String TAX_DESCRIPTION= "tax_description";
+    public static final String ACTIVE= "active";
 
     public DatabaseStock(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,11 +54,13 @@ public class DatabaseStock extends SQLiteOpenHelper {
         String create_table_master_shelf = "CREATE TABLE " + DATABASE_MASTER_SHELF + "(" + SHELF_CODE + " TEXT PRIMARY KEY," + RACK_CODE + " TEXT," + SHELF_NAME + " TEXT," + SHELF_DESCRIPTION + " TEXT)";
         String create_table_master_batch = "CREATE TABLE " + DATABASE_MASTER_BATCH + "(" + BATCH_CODE + " TEXT PRIMARY KEY," + PRODUCT_CODE + " TEXT," + BATCH_BATCH_NO + " TEXT," + BATCH_MFG_DATE + " TEXT," + BATCH_EXPIRY_DATE + " TEXT," + BATCH_MRP + " TEXT)";
         String create_table_master_stock = "CREATE TABLE " + DATABASE_MASTER_STOCK + "(" + STOCK_CODE + " TEXT PRIMARY KEY," + BATCH_CODE + " TEXT," + TAX_CODE+" TEXT,"+STOCK_QUANTITY + " TEXT,"+SHELF_CODE+" TEXT)";
+        String create_table_tax="CREATE TABLE "+DATABASE_TABLE_TAX+"("+TAX_CODE+" TEXT PRIMARY KEY,"+TAX_NAME+" TEXT,"+TAX_PERCENTAGE+" TEXT,"+TAX_DESCRIPTION+" TEXT,"+ACTIVE+" TEXT)";
 
         sqLiteDatabase.execSQL(create_table_master_rack);
         sqLiteDatabase.execSQL(create_table_master_shelf);
         sqLiteDatabase.execSQL(create_table_master_batch);
         sqLiteDatabase.execSQL(create_table_master_stock);
+        sqLiteDatabase.execSQL(create_table_tax);
     }
 
     @Override
@@ -61,11 +69,13 @@ public class DatabaseStock extends SQLiteOpenHelper {
         String drop_table_master_shelf = "DROP TABLE IF EXISTS " + DATABASE_MASTER_SHELF;
         String drop_table_master_batch = "DROP TABLE IF EXISTS " + DATABASE_MASTER_BATCH;
         String drop_table_master_stock = "DROP TABLE IF EXISTS " + DATABASE_MASTER_STOCK;
+        String drop_table_tax="DROP TABLE IF EXISTS "+DATABASE_TABLE_TAX;
 
         sqLiteDatabase.execSQL(drop_table_master_rack);
         sqLiteDatabase.execSQL(drop_table_master_shelf);
         sqLiteDatabase.execSQL(drop_table_master_batch);
         sqLiteDatabase.execSQL(drop_table_master_stock);
+        sqLiteDatabase.execSQL(drop_table_tax);
     }
 
     public void insertRackDetails(Rack rack) {
@@ -119,4 +129,17 @@ public class DatabaseStock extends SQLiteOpenHelper {
             db.insert(DATABASE_MASTER_STOCK, null, values);
         db.close();
     }*/
+   public void insertTaxDetails(Tax tax){
+       SQLiteDatabase db=this.getWritableDatabase();
+       ContentValues values=new ContentValues();
+       values.put(TAX_CODE,tax.getTax_code());
+       values.put(TAX_NAME,tax.getTax_name());
+       values.put(TAX_PERCENTAGE,tax.getTax_percentage());
+       values.put(TAX_DESCRIPTION,tax.getTax_desc());
+       values.put(ACTIVE,tax.getActive());
+       int i=db.update(DATABASE_TABLE_TAX,values,TAX_CODE+"=?",new String[]{TAX_CODE});
+       if(i==0)
+           db.insert(DATABASE_TABLE_TAX,null,values);
+       db.close();
+   }
 }
