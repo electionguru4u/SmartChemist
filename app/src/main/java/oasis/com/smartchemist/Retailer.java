@@ -5,4 +5,5 @@ package oasis.com.smartchemist;
  */
 public class Retailer {
     private String a,b,c;
+    String amit;
 }
