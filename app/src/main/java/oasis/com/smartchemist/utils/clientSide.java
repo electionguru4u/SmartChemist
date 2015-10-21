@@ -8,13 +8,9 @@ import com.loopj.android.http.RequestParams;
 
 import org.apache.http.entity.StringEntity;
 
-
-//C:\Users\FDS\.m2\repository maven
-
-
 public class clientSide {
 
-    private static final String BASE_URL = "http://mysmartchemist.com/SmartChemist/SmartChemistRestService.svc/";
+    private static final String BASE_URL = "http://mysmartchemist.com/Smart_Chemist/Smart_ChemistRestService.svc/";
     //private static final String BASE_URL ="http://hajjlocator.com/HajiService/HajiRestService.svc/";
     //private static final String BASE_URL ="http://192.168.1.33:8082/HajiRestService.svc/";
 

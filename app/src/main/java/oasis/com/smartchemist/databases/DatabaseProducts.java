@@ -40,16 +40,30 @@ public class DatabaseProducts extends SQLiteOpenHelper {
     private static final String DRUG_SCHEDULE_NAME = "drug_schedule_name";
     private static final String DRUG_SCHEDULE_DESCRIPTION = "drug_schedule_description";
 
+    private static final String DATABASE_TABLE_MASTER_MOVEMENT = "master_movement";
+    //    public static final String PRODUCT_CODE = "product_code";
+    public static final String MOVEMENT_CODE = "movement_code";
+    public static final String PURCHASE_QUANTITY = "purchase_quantity";
+    public static final String SALES_QUANTITY = "sales_quantity";
+    public static final String DATE_TIME = "date_time";
+
+    private static final String DATABASE_TABLE_DETAIL_MOVEMENT = "detail_movement";
+    //public static final String MOVEMENT_CODE= "movement_code";
+    //public static final String PURCHASE_QUANTITY = "purchase_quantity";
+    //public static final String SALES_QUANTITY = "sales_quantity";
+    public static final String DATE = "date";
+    //movement_code,date,purchase_qty,sales_qty,shelf_code;
+
     public DatabaseProducts(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String create_table_products = "CREATE TABLE " + DATABASE_TABLE_PRODUCTS + "(" + PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + PACKING_TYPE + " TEXT,"+PRODUCT_CONTENT+" TEXT," + COMPANY_CODE + " TEXT," +DRUG_TYPE_CODE+" TEXT,"+DRUG_SCHEDULE_CODE+" TEXT,"+ PRODUCT_DESCRIPTION + " TEXT," + PRODUCT_RANK + " INTEGER)";
+        String create_table_products = "CREATE TABLE " + DATABASE_TABLE_PRODUCTS + "(" + PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + PRODUCT_CODE + " TEXT," + PRODUCT_NAME + " TEXT," + PACKING_TYPE + " TEXT," + PRODUCT_CONTENT + " TEXT," + COMPANY_CODE + " TEXT," + DRUG_TYPE_CODE + " TEXT," + DRUG_SCHEDULE_CODE + " TEXT," + PRODUCT_DESCRIPTION + " TEXT," + PRODUCT_RANK + " INTEGER)";
         String create_table_drug_type = "CREATE TABLE " + DATABASE_TABLE_DRUG_TYPE + "(" + DRUG_TYPE_CODE + " TEXT PRIMARY KEY," + DRUG_TYPE_NAME + " TEXT," + DRUG_TYPE_DESCRIPTION + " TEXT)";
         String create_table_company = "CREATE TABLE " + DATABASE_TABLE_COMPANY + "(" + COMPANY_CODE + " TEXT PRIMARY KEY," + COMPANY_NAME + " TEXT," + COMPANY_DESCRIPTION + " TEXT)";
-        String create_table_drug_schedule = "CREATE TABLE " + DATABASE_TABLE_DRUG_SCHEDULE+ "(" + DRUG_SCHEDULE_CODE+ " TEXT PRIMARY KEY," + DRUG_SCHEDULE_NAME+ " TEXT," + DRUG_SCHEDULE_DESCRIPTION+ " TEXT)";
+        String create_table_drug_schedule = "CREATE TABLE " + DATABASE_TABLE_DRUG_SCHEDULE + "(" + DRUG_SCHEDULE_CODE + " TEXT PRIMARY KEY," + DRUG_SCHEDULE_NAME + " TEXT," + DRUG_SCHEDULE_DESCRIPTION + " TEXT)";
 
         sqLiteDatabase.execSQL(create_table_products);
         sqLiteDatabase.execSQL(create_table_drug_type);
@@ -62,7 +76,7 @@ public class DatabaseProducts extends SQLiteOpenHelper {
         String drop_table_products = "DROP TABLE IF EXISTS " + DATABASE_TABLE_PRODUCTS;
         String drop_table_drug_type = "DROP TABLE IF EXISTS " + DATABASE_TABLE_DRUG_TYPE;
         String drop_table_company = "DROP TABLE IF EXISTS " + DATABASE_TABLE_COMPANY;
-        String drop_table_drug_schedule= "DROP TABLE IF EXISTS " + DATABASE_TABLE_DRUG_SCHEDULE;
+        String drop_table_drug_schedule = "DROP TABLE IF EXISTS " + DATABASE_TABLE_DRUG_SCHEDULE;
         sqLiteDatabase.execSQL(drop_table_products);
         sqLiteDatabase.execSQL(drop_table_drug_type);
         sqLiteDatabase.execSQL(drop_table_drug_schedule);
@@ -88,7 +102,6 @@ public class DatabaseProducts extends SQLiteOpenHelper {
     }
 
 
-
     public void insertDrugTypeDetails(DrugType drugType) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -104,10 +117,10 @@ public class DatabaseProducts extends SQLiteOpenHelper {
     public void insertDrugScheduleDetails(DrugSchedule drugSchedule) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DRUG_SCHEDULE_CODE,drugSchedule.getDrug_schedule_code());
+        values.put(DRUG_SCHEDULE_CODE, drugSchedule.getDrug_schedule_code());
         values.put(DRUG_SCHEDULE_NAME, drugSchedule.getDrug_schedule_name());
         values.put(DRUG_SCHEDULE_DESCRIPTION, drugSchedule.getDrug_schedule_description());
-        int i = db.update(DATABASE_TABLE_DRUG_SCHEDULE, values, DRUG_SCHEDULE_CODE+ "=?", new String[]{drugSchedule.getDrug_schedule_code()});
+        int i = db.update(DATABASE_TABLE_DRUG_SCHEDULE, values, DRUG_SCHEDULE_CODE + "=?", new String[]{drugSchedule.getDrug_schedule_code()});
         if (i == 0)
             db.insert(DATABASE_TABLE_DRUG_SCHEDULE, null, values);
         db.close();
@@ -127,7 +140,7 @@ public class DatabaseProducts extends SQLiteOpenHelper {
 
     public Cursor searchProduct(String product_name) {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(DATABASE_TABLE_PRODUCTS, new String[]{PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME,PACKING_TYPE}, PRODUCT_NAME + " LIKE '" + product_name + "%'", null, null, null, PRODUCT_NAME + " ASC");
+        return db.query(DATABASE_TABLE_PRODUCTS, new String[]{PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME, PACKING_TYPE}, PRODUCT_NAME + " LIKE '" + product_name + "%'", null, null, null, PRODUCT_NAME + " ASC");
     }
 
     public String getProductCode(String product_name) {

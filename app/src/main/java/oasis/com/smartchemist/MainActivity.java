@@ -1,8 +1,11 @@
 package oasis.com.smartchemist;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +15,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import oasis.com.smartchemist.utils.clientSide;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +56,69 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        try {
+            checkService();
+        } catch (JSONException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkService() throws JSONException, UnsupportedEncodingException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("master_code", "1");
+        jsonObject.put("mobile_no", "9096718386");
+        Log.e("values", jsonObject.toString());
+        StringEntity stringEntity = new StringEntity(jsonObject.toString());
+
+        clientSide.post(getApplicationContext(), "Insert_Employee_Details", stringEntity, "application/json", new JsonHttpResponseHandler() {
+            ProgressDialog progressDialog;
+
+            @Override
+            public void onStart() {
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setMessage("Getting Retailer Details...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                try {
+                    progressDialog.dismiss();
+                    Log.e("RetailerDetails", response.toString());
+                    JSONArray jsonArray = response.getJSONArray("get_retailer_infoResult");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "error:" + responseString, Toast.LENGTH_SHORT).show();
+                Log.e("error", responseString);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Network error...Try Again!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Network error...Try Again!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
